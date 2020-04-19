@@ -40,6 +40,7 @@
     dest: "/home/{{ rhasspy_voltron_user }}/rhasspy-voltron"
     recursive: yes
     force: yes
+    update: no # delete repo on the pi to update rhassspy
   register: code
 
 - name: Build executable
