@@ -1,0 +1,71 @@
+---
+- name: Stop rhasspy service
+  systemd:
+    name: rhasspy
+    state: stopped
+    scope: user
+  become: yes
+  become_user: "{{ rhasspy_user }}"
+  
+- name: Clone rhasspy repo
+  git:
+    dest: /home/{{ rhasspy_user }}/rhasspy
+    repo: https://github.com/synesthesiam/rhasspy.git
+    version: "{{ rhasspy_version }}"
+  register: code
+  become: yes
+  become_user: "{{ rhasspy_user }}"
+
+- name: Execute download-dependencies.sh
+  command:
+    chdir: /home/{{ rhasspy_user }}/rhasspy
+    cmd: /home/{{ rhasspy_user }}/rhasspy/download-dependencies.sh
+  register: download_dependencies
+  failed_when: "'Done' not in download_dependencies.stdout"
+  when: code.changed | bool
+  become: yes
+  become_user: "{{ rhasspy_user }}"
+
+- name: Execute create-venv.sh
+  command:
+    chdir: /home/{{ rhasspy_user }}/rhasspy
+    cmd: /home/{{ rhasspy_user }}/rhasspy/create-venv.sh
+  register: create_venv
+  when: code.changed | bool
+  failed_when: "'Done' not in download_dependencies.stdout"
+  become: yes
+  become_user: "{{ rhasspy_user }}"
+
+# - name: Copy configuration
+#   copy:
+#     src: rhasspy
+#     dest: "/home/{{ rhasspy_user }}/.config/"
+#   become: yes
+#   become_user: "{{ rhasspy_user }}"
+
+- name: Create systemd service file
+  template:
+    src: rhasspy.service.j2
+    dest: "/home/{{ rhasspy_user }}/.config/systemd/user/rhasspy.service"
+    backup: yes
+    mode: "u=rw,go=r"
+  become: yes
+  become_user: "{{ rhasspy_user }}"
+
+- name: Enable rhasspy service
+  systemd:
+    name: rhasspy
+    enabled: yes
+    scope: user
+    daemon_reload: yes
+  become: yes
+  become_user: "{{ rhasspy_user }}"
+
+- name: Restart rhasspy service
+  systemd:
+    name: rhasspy
+    state: restarted
+    scope: user
+  become: yes
+  become_user: "{{ rhasspy_user }}"
+    
