@@ -1,0 +1,21 @@
+{{ ansible_managed | comment }}
+
+[Unit]
+Description=Rhasspy
+After=syslog.target network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/{{ rhasspy_voltron.rhasspy_voltron_user | default(rhasspy_voltron_user) }}/rhasspy-voltron
+ExecStart=/bin/bash -lc './bin/rhasspy-voltron --profile {{ rhasspy_voltron.rhasspy_voltron_lang | default(rhasspy_voltron_lang) }}'
+
+RestartSec=1
+Restart=on-failure
+
+StandardOutput=syslog
+StandardError=syslog
+
+SyslogIdentifier=rhasspy
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,75 @@
+---
+# See https://github.com/rhasspy/rhasspy-voltron
+
+- name: Stop rhasspy service
+  systemd:
+    name: rhasspy
+    state: stopped
+    scope: user
+    daemon_reload: yes
+  become: yes
+  become_user: "{{ rhasspy_voltron_user }}"
+
+- name: Update apt repositories cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  become: yes
+
+- name: Install dependencies
+  apt:
+    name: "{{ rhasspy_voltron_dependencies }}"
+    state: present
+  become: yes
+
+- name: Install runtime dependencies
+  apt:
+    name: "{{ rhasspy_voltron_runtime_dependencies }}"
+    state: present
+  become: yes
+
+- name: Install libttspico deb files
+  apt:
+    deb: "{{ rhasspy_voltron_libttspico.base_url }}/{{ item }}_{{ rhasspy_voltron_libttspico.version }}_armhf.deb"
+  loop: "{{ rhasspy_voltron_libttspico.packages }}"
+  become: yes
+
+- name: Clone repository
+  git:
+    repo: "{{ rhasspy_voltron_repo }}"
+    dest: "/home/{{ rhasspy_voltron_user }}/rhasspy-voltron"
+    recursive: yes
+    force: yes
+  register: code
+
+- name: Build executable
+  command:
+    chdir: "/home/{{ rhasspy_voltron_user }}/rhasspy-voltron"
+    cmd: make
+  when: code.changed | bool
+
+- name: Create systemd service file
+  template:
+    src: rhasspy.service.j2
+    dest: "/home/{{ rhasspy_voltron_user }}/.config/systemd/user/rhasspy.service"
+    backup: yes
+    mode: "u=rw,go=r"
+  become: yes
+  become_user: "{{ rhasspy_voltron_user }}"
+
+- name: Enable rhasspy service
+  systemd:
+    name: rhasspy
+    enabled: yes
+    scope: user
+    daemon_reload: yes
+  become: yes
+  become_user: "{{ rhasspy_voltron_user }}"
+
+- name: Restart rhasspy service
+  systemd:
+    name: rhasspy
+    state: restarted
+    scope: user
+  become: yes
+  become_user: "{{ rhasspy_voltron_user }}"
