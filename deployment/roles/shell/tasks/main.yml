@@ -1,0 +1,51 @@
+---
+- name: install dependencies
+  become: yes
+  package:
+    name:
+      - git
+      - zsh
+    state: present
+
+- name: clone oh-my-zsh for user
+  become: yes
+  become_user: "{{ shell_user }}"
+  git:
+    dest: "~{{ shell_user }}/.oh-my-zsh"
+    repo: https://github.com/robbyrussell/oh-my-zsh.git
+
+- name: install zsh-autosuggestions
+  become: yes
+  become_user: "{{ shell_user }}"
+  git:
+    dest: "~{{ shell_user }}/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+    repo: https://github.com/zsh-users/zsh-autosuggestions
+
+- name: install zsh-syntax-highlighting
+  become: yes
+  become_user: "{{ shell_user }}"
+  git:
+    dest: "~{{ shell_user }}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
+    repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
+
+- name: fix permissions of oh-my-zsh directory
+  become: yes
+  file:
+    path: "~{{ shell_user }}/.oh-my-zsh"
+    mode: "go-w"
+    recurse: yes
+
+- name: set default shell for user
+  become: yes
+  user:
+    name: "{{ shell_user }}"
+    shell: /bin/zsh
+
+- name: create .zshrc
+  become: yes
+  become_user: "{{ shell_user }}"
+  template:
+    src: zshrc.j2
+    dest: "~{{ shell_user }}/.zshrc"
+    backup: yes
+    mode: "u=rw,go=r"

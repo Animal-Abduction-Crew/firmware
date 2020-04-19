@@ -1,0 +1,7 @@
+---
+shell_user: pi
+shell_theme: robbyrussell
+shell_plugins:
+  - git
+  - zsh-autosuggestions
+  - zsh-syntax-highlighting
