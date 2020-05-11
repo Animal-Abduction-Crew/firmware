@@ -2,7 +2,7 @@ import RPi.GPIO as gpio
 import time
 
 gpio.setmode(gpio.BOARD)
-pin = 3 
+pin = 2 
 gpio.setup(pin, gpio.IN)
 
 while  True:

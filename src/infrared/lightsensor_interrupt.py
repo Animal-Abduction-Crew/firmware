@@ -10,7 +10,7 @@ import time
 #
 # precondition: pigpiod demon must be running
 
-GPIO_LIGHT = 3 # Lightsensor GPI2 pin
+GPIO_LIGHT = 2 # Lightsensor GPI2 pin
 IGNORE_INTERVAL = 5000 # microseconds
 HIGH = 1
 
