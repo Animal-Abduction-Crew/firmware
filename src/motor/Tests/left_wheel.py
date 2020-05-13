@@ -5,8 +5,8 @@ import time
 # Hardware PWM available for GPIO 12, 13, 18, 19 (BCM scheme)
 
 GPIO_PWM = 12 # PWM pin
-GPIO_IN1 = 25 # motor control pin
-GPIO_IN2 = 15 # motor control pin
+GPIO_IN1 = 7 # motor control pin
+GPIO_IN2 = 1 # motor control pin
 
 #GPIO_PWM = 13 # PWM pin
 #GPIO_IN1 = 27 # motor control pin
@@ -14,7 +14,7 @@ GPIO_IN2 = 15 # motor control pin
 
 RUNNING_TIME = 10 # seconds
 PWM_FREQUENCY = 50000 # Hz
-PWM_DUTY_CYCLE = 10 # percent
+PWM_DUTY_CYCLE = 50 # percent
 
 pi = pigpio.pi()
 

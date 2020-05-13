@@ -1,7 +1,7 @@
 import pigpio
 import time
 
-GPIO_PWM = 19 # PWM pin
+GPIO_PWM = 6 # PWM pin
 
 RUNNING_TIME = 2 # seconds
 PWM_FREQUENCY = 50000 # Hz

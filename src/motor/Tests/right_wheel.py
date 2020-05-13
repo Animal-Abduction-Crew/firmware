@@ -4,9 +4,9 @@ import time
 # @pre pigpio demon must be running (sudo pigpiod)
 # Hardware PWM available for GPIO 12, 13, 18, 19 (BCM scheme)
 
-GPIO_PWM = 18 # PWM pin
-GPIO_IN1 = 10 # motor control pin
-GPIO_IN2 = 9 # motor control pin
+GPIO_PWM = 13 # PWM pin
+GPIO_IN1 = 6 # motor control pin
+GPIO_IN2 = 5 # motor control pin
 
 #GPIO_PWM = 13 # PWM pin
 #GPIO_IN1 = 27 # motor control pin
