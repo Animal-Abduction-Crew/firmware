@@ -21,25 +21,28 @@ MAX_CPU_TEMP = 70 # celsius
 MIN_CONFIDENCE = 0.5
 THRESHOLD = 0.4
 
-# initialize network
-print('loading network')
-net = cv2.dnn.readNetFromDarknet(CONFIG_PATH, WEIGHTS_PATH)
+def init_network(CONFIG_PATH, WEIGHTS_PATH):
+    print('loading network')
+    return cv2.dnn.readNetFromDarknet(CONFIG_PATH, WEIGHTS_PATH)
+
+net = init_network(CONFIG_PATH, WEIGHTS_PATH)
+
 layer_names = net.getLayerNames()
 layer_names = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
 
-# init video stream
-print('Loading video stream')
-video_stream = cv2.VideoCapture(CAM_ID)
-video_stream.set(cv2.CAP_PROP_BUFFERSIZE, BUFFER_SIZE)
-video_stream.set(cv2.CAP_PROP_FRAME_WIDTH, NETWORK_WIDTH)
-video_stream.set(cv2.CAP_PROP_FRAME_HEIGHT, NETWORK_HEIGHT)
+def init_video_stream(cam_id, buffer_size, width, height):
+    print('init video stream')
+    video_stream = cv2.VideoCapture(cam_id)
+    video_stream.set(cv2.CAP_PROP_BUFFERSIZE, buffer_size)
+    video_stream.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+    video_stream.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+    return video_stream
+
+video_stream = init_video_stream(CAM_ID, BUFFER_SIZE, NETWORK_WIDTH, NETWORK_HEIGHT)
 
 # init cpu temp momitor
 print('init cpu monitor')
 cpu = CPUTemperature()
-
-# what the fuck is this??
-(W, H) = (None, None)
 
 # loop over the frames
 print('start looping over frames')
@@ -57,6 +60,8 @@ while True:
     if not grabbed:
         print('stream endend')
         break
+
+    (W, H) = (None, None)
 
     # if the frame dimensions are empty, grab them
     if W is None or H is None:
@@ -113,7 +118,6 @@ while True:
 
     # ensure at least one detection exists
     if len(idxs) > 0:
-        print(idxs)
         # loop over the indexes we are keeping
         for i in idxs.flatten():
             # extract the bounding box coordinates

@@ -1,7 +1,7 @@
 import pigpio
 import time
 
-GPIO_LIGHT = 16 # Lightsensor GPI2 pin
+GPIO_LIGHT = 21 # Lightsensor GPI2 pin
 IGNORE_INTERVAL = 5000 # microseconds
 HIGH = 1
 

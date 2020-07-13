@@ -43,7 +43,7 @@ while True:
         time.sleep(1)
     except KeyboardInterrupt:
         print('User interrupt')
-        break;
+        break
 
 # Free resources
 print('Shutting down')

@@ -54,9 +54,14 @@ Echo     09
 
 Schalter:
 
+
+Infrarod:
+link       Pin 2
+rechts     Pin 3
+mitte      Pin 4
+
 max zu:  16
 max auf: 21
-
 
 
 

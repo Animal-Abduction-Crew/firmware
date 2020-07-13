@@ -1,4 +1,4 @@
-import pigpio
+ import pigpio
 import time
 
 # @pre pigpio demon must be running (sudo pigpiod)

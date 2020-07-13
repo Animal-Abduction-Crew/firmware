@@ -1,36 +1,34 @@
-#Greifer        öffnen          5
-#               schließen       6
-#               geschwindigkeit 13 (PWM)
-#Rad links      vorwärts       7
-#               rückwärts      8
-#               geschwindigkeit 12 (PWM)
-#Rad rechts     vorwärts        15
-#               rückwärts       14
-#               geschwindigkeit 18 (PWM)
-#
-
 import pigpio
 import time
 
 # @pre pigpio demon must be running (sudo pigpiod)
 # Hardware PWM available for GPIO 12, 13, 18, 19 (BCM scheme)
 
-GPIO_PWM = 18 # PWM pin
-GPIO_IN1 = 14 # motor control pin
-GPIO_IN2 = 15 # motor control pin
+GPIO_PWM = 13 # PWM pin
+GPIO_IN1 = 5 # motor control pin
+GPIO_IN2 = 6 # motor control pin
+
+#GPIO_PWM = 13 # PWM pin
+#GPIO_IN1 = 27 # motor control pin
+#GPIO_IN2 = 22 # motor control pin
 
 RUNNING_TIME = 1 # seconds
 PWM_FREQUENCY = 50000 # Hz
-PWM_DUTY_CYCLE = 10 # percent
+PWM_DUTY_CYCLE = 60 # percent
 
 pi = pigpio.pi()
+
+# For PWM on non-hardware-GPIO pins (here: 21)
+#pi.set_mode(21, pigpio.OUTPUT)
+#pi.set_PWM_frequency(21, PWM_FREQUENCY)
+#pi.set_PWM_range(21, 100)
+#pi.set_PWM_dutycycle(PWM_DUTY_CYCLE)
 
 # Motor control pins
 # 0, 1 forward (whatever that means in your case)
 # 1, 0 reverse
 # 1, 1 brake
 # 0, 0 stop slowly
-
 pi.set_mode(GPIO_IN1, pigpio.OUTPUT)
 pi.set_mode(GPIO_IN2, pigpio.OUTPUT)
 pi.write(GPIO_IN1, 0)

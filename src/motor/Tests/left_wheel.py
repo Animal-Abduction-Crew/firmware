@@ -5,16 +5,16 @@ import time
 # Hardware PWM available for GPIO 12, 13, 18, 19 (BCM scheme)
 
 GPIO_PWM = 12 # PWM pin
-GPIO_IN1 = 7 # motor control pin
-GPIO_IN2 = 1 # motor control pin
+GPIO_IN1 = 1 # motor control pin
+GPIO_IN2 = 7 # motor control pin
 
 #GPIO_PWM = 13 # PWM pin
 #GPIO_IN1 = 27 # motor control pin
 #GPIO_IN2 = 22 # motor control pin
 
-RUNNING_TIME = 10 # seconds
+RUNNING_TIME = 1 # seconds
 PWM_FREQUENCY = 50000 # Hz
-PWM_DUTY_CYCLE = 50 # percent
+PWM_DUTY_CYCLE = 20 # percent
 
 pi = pigpio.pi()
 
@@ -31,7 +31,7 @@ pi = pigpio.pi()
 # 0, 0 stop slowly
 pi.set_mode(GPIO_IN1, pigpio.OUTPUT)
 pi.set_mode(GPIO_IN2, pigpio.OUTPUT)
-pi.write(GPIO_IN1, 0)
+pi.write(GPIO_IN1, 1)
 pi.write(GPIO_IN2, 0)
 
 try:

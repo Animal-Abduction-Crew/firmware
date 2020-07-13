@@ -3,9 +3,9 @@ import time
 
 GPIO_PWM = 13 # PWM pin
 
-RUNNING_TIME = 2 # seconds
+RUNNING_TIME = 1 # seconds
 PWM_FREQUENCY = 50000 # Hz
-PWM_DUTY_CYCLE = 40 # percent
+PWM_DUTY_CYCLE = 60 # percent
 
 pi = pigpio.pi()
 
