@@ -1,6 +1,7 @@
 import pigpio
 import time
 
+
 # @pre pigpio demon must be running (sudo pigpiod)
 # Hardware PWM available for GPIO 12, 13, 18, 19 (BCM scheme)
 PWM_FREQUENCY = 50000
@@ -56,8 +57,19 @@ def drive_straight(running_time, direction, power):
     drive(running_time, pi, power)
     brake()
 
+#def turn(direction, power, angle):
+#    pi = pigpio.pi()
+#    initialize_pins(pi)
+#
+#   if direction == "left":
+#
+#
+#    elif direction == "right":
+
+
+
 
     
-drive_straight(0.5, "forward", 0.2)
+drive_straight(7, "forward", 0.8)
 time.sleep(1)
-drive_straight(1, "reverse", 1)
+# drive_straight(2, "reverse", 1)

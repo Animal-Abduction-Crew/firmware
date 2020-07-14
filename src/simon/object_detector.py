@@ -2,6 +2,9 @@ import cv2 # for object detection
 from gpiozero import CPUTemperature # for getting CPU temp
 import time # for timeouts
 import numpy as np
+import pigpio
+
+
 
 # constants
 CAM_ID = 0
@@ -12,14 +15,69 @@ LABELS = [
     "cat",
     "frog"
 ]
-CONFIG_PATH = "config.cfg"
-WEIGHTS_PATH = "yolo.weights"
+CONFIG_PATH = "256x192-yolo-tiny-3l.cfg"
+WEIGHTS_PATH = "256x192-yolo-tiny-3l_final.weights"
 BUFFER_SIZE = 1
-NETWORK_WIDTH = 192
-NETWORK_HEIGHT = 128
+NETWORK_WIDTH = 256
+NETWORK_HEIGHT = 192
 MAX_CPU_TEMP = 70 # celsius
-MIN_CONFIDENCE = 0.5
+MIN_CONFIDENCE = 0.4
 THRESHOLD = 0.4
+
+# @pre pigpio demon must be running (sudo pigpiod)
+# Hardware PWM available for GPIO 12, 13, 18, 19 (BCM scheme)
+PWM_FREQUENCY = 50000
+
+def initialize_pins(pi):
+    for i in [14, 8, 15, 7]:
+        pi.set_mode(i, pigpio.OUTPUT)
+
+def drive(running_time, pi, power):
+    PWM_DUTY_CYCLE = int(round(50 * power, 0))
+
+    try:
+        duty = PWM_DUTY_CYCLE * 10000 # Max: 1M
+        for i in [18, 12]:
+            pi.hardware_PWM(i, PWM_FREQUENCY, duty)
+        running = True
+    except:
+        print('Hardware PWM not available on GPIO ')
+        pi.stop()
+
+    if running:
+        time.sleep(running_time)
+        for i in [18, 12]:
+            pi.write(i, 0)
+        pi.stop()
+
+def brake():
+    pi = pigpio.pi()
+    initialize_pins(pi)
+
+    for i in [14, 15, 7, 8]:
+        pi.write(i, 1)
+    
+    drive(0.5, pi, 1)
+
+
+
+def drive_straight(running_time, direction, power):
+    pi = pigpio.pi()
+    initialize_pins(pi)
+
+    if direction == "forward":
+        hi_low = [0, 1]
+    elif direction == "reverse":
+        hi_low = [1, 0]
+
+    for i in [14, 8]:
+        pi.write(i, hi_low[0])
+
+    for i in [15, 7]:
+        pi.write(i, hi_low[-1])
+
+    drive(running_time, pi, power)
+    brake()
 
 def init_network(CONFIG_PATH, WEIGHTS_PATH):
     print('loading network')
@@ -46,30 +104,35 @@ cpu = CPUTemperature()
 
 # loop over the frames
 print('start looping over frames')
-while True:
-    
+def detect():
+    start = time.time()
+
     # <3 for the cpu
     while cpu.temperature > MAX_CPU_TEMP:
         print(f"{cpu.temperature} is too hot! cooling down...")
         time.sleep(0.1)
     
-    print('get a frame from the camera')
+    # print('get a frame from the camera')
     (grabbed, frame) = video_stream.read()
 
     # end of the stream
     if not grabbed:
         print('stream endend')
-        break
 
     (W, H) = (None, None)
 
     # if the frame dimensions are empty, grab them
     if W is None or H is None:
-        print('get the frame dimensions')
+       # print('get the frame dimensions')
         (H, W) = frame.shape[:2]
 
+    # rotate the frame because of the camera mount
+    if frame is not None:
+       # print('rotating frame')
+        frame = cv2.rotate(frame, cv2.ROTATE_180)
+
     # let the network process the frame 
-    print('let the network process the frame')                      
+    # print('let the network process the frame')                      
     blob = cv2.dnn.blobFromImage(frame, 1 / 255.0, (NETWORK_WIDTH, NETWORK_HEIGHT), swapRB=True, crop=False)
     net.setInput(blob)
     layer_outputs = net.forward(layer_names)
@@ -128,8 +191,26 @@ while True:
             name = LABELS[classIDs[i]]
             confidence = confidences[i]
 
-            print(f"Found {name} with confidence {confidence} x: {x}, y: {y}, w: {w}, h: {h}")           
+            print(f"Found {name} with confidence {confidence} x: {x}, y: {y}, w: {w}, h: {h}") 
+
+        return idxs.flatten()
+
+    print(f"took {time.time() - start} seconds")
+
+    return None
     
+
+drive_straight(2,"forward",0.8)
+
+result = detect()
+
+while result == None:
+    drive_straight(2,"forward",0.8)
+    result = detect()
+
+while True:
+    drive_straight(1, "forward", 0.2)
+    drive_straight(1, "reverse", 0.2)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         print('exited')
         break

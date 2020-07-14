@@ -1,0 +1,56 @@
+import pigpio
+import time
+
+from line_detector import LineDetector
+from vehicle import Vehicle
+from motor import Motor
+
+# Create gpio controller
+print('init gpio controller')
+pi = pigpio.pi()
+
+# Create line detector
+line_detected = False
+def line_detected():
+    global line_detected
+    line_detected = True
+
+# init line detectors
+print('init left line sensor')
+left_line_detector = LineDetector(pi=pi, pin=2, callback=line_detected)
+right_line_detector = LineDetector(pi=pi, pin=3, callback=line_detected)
+
+# init motors
+
+left_motor = Motor(pi, [12,7,8])
+right_motor = Motor(pi, [18,15,14])
+
+# # init vehicle
+# pins = {
+#     "left_motor": {
+#         "pwm": 12,
+#         "pin1": 7,
+#         "pin2": 8, 
+#     },
+#     "right_motor": {
+#         "pwm": 18,
+#         "pin1": 15,
+#         "pin2": 14, 
+#     }
+# }
+
+# vehicle_controller = Vehicle(pi=pi)
+
+left_motor.forward(1,50)
+right_motor.forward(1,50)
+
+while True:
+    try:
+        time.sleep(1)
+    except KeyboardInterrupt:
+        print('User interrupt')
+        break
+
+# Free resources
+print('Shutting down')
+pi.stop()

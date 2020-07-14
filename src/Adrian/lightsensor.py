@@ -7,22 +7,7 @@ HIGH = 1
 
 tally = 0 # counter for callback function calls
 last_tick = 0 # time of last valid callback function call
-
-def initialize_pins(pi):
-    for i in [2, 3, 4]:
-        pi.set_mode(i, pigpio.OUTPUT)  
-
-def check_line():
-    if (pi.read(2)== HIGH or pi.read(3)== HIGH):
-        return True
-    else:
-        return False
-
-
-
-
-
-
+ 
 
 def level_changed(gpio_num, level, tick):
     global tally
