@@ -70,6 +70,6 @@ def drive_straight(running_time, direction, power):
 
 
     
-drive_straight(7, "forward", 0.8)
+drive_straight(7, "forward", 0.1)
 time.sleep(1)
 # drive_straight(2, "reverse", 1)
