@@ -1,10 +1,11 @@
 import pigpio
 
-class Vehicle():
+class Driver():
     
-    def __init__(self, pi):
+    def __init__(self, pi, left_motor, right_motor):
         self.pi = pi
-        print('hello')
+        self.left = left_motor
+        self.right = right_motor
 
     def forward(self, duration, power):
         print('diving forward')

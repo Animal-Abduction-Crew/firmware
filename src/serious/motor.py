@@ -15,12 +15,16 @@ class Motor:
         self.pi.set_mode(self.INPUT1_PIN, pigpio.OUTPUT)
         self.pi.set_mode(self.INPUT2_PIN, pigpio.OUTPUT)
 
-    # power in percent
     def forward(self, duration, power):
 
-        self.pi.write(self.INPUT1_PIN, 1)
-        self.pi.write(self.INPUT2_PIN, 0)
+        self.write(1,0)
+        self.go(duration, power) 
 
+    def reverse(self, duration, power):
+        self.write(0,1)
+        self.go(duration, power) 
+
+    def go(self, duration, power):
         try:
             duty = 10000 * power
             self.pi.hardware_PWM(self.PWM_PIN, self.PWM_FREQUENCY, duty)
@@ -32,15 +36,11 @@ class Motor:
 
         time.sleep(duration)
 
-        self.pi.write(self.INPUT1_PIN, 1)
-        self.pi.write(self.INPUT2_PIN, 1)
+        self.write(1,1)
+        self.write(0,0)
 
-        self.pi.write(self.INPUT1_PIN, 0)
-        self.pi.write(self.INPUT2_PIN, 0)
-
-    def reverse(self, duration, power):
-        # forward
-        # stop
-        pass
+    def write(self, pin1, pin2):
+        self.pi.write(self.INPUT1_PIN, pin1)
+        self.pi.write(self.INPUT2_PIN, pin2)
 
     
