@@ -40,5 +40,3 @@ class Motor:
     def _write(self, pin1, pin2):
         self.pi.write(self.INPUT1_PIN, pin1)
         self.pi.write(self.INPUT2_PIN, pin2)
-
-    

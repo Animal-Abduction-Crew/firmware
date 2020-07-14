@@ -1,7 +1,7 @@
 import pigpio
 import time
 
-from line_detector import LineDetector
+from light_sensor import LightSensor
 from driver import Driver
 from motor import Motor
 
@@ -11,14 +11,22 @@ pi = pigpio.pi()
 
 # Create line detector
 line_detected = False
-def line_detected():
+def line_detected_cb():
     global line_detected
     line_detected = True
+    print('line detected')
+
+def something_infront_cb():
+    print('something infront detected')
 
 # init line detectors
 print('init left line sensor')
-left_line_detector = LineDetector(pi=pi, pin=2, callback=line_detected)
-right_line_detector = LineDetector(pi=pi, pin=3, callback=line_detected)
+left_line_detector = LightSensor(pi=pi, pin=2, callback=line_detected_cb)
+right_line_detector = LightSensor(pi=pi, pin=3, callback=line_detected_cb)
+
+# init front light sensor
+print('init front proximity sensor')
+front_proximity_sensor = LightSensor(pi=pi, pin=4, callback=something_infront_cb)
 
 # init motors
 print('init motors')
@@ -31,10 +39,7 @@ driver = Driver(pi, left_motor, right_motor)
 
 while True:
     try:
-        driver.turn_left(1,30)
-        time.sleep(1)
-        driver.turn_right(1,30)
-        time.sleep(1)
+        pass
 
     except KeyboardInterrupt:
         driver.stop()

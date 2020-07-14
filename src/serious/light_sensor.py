@@ -1,6 +1,6 @@
 import pigpio
 
-class LineDetector:
+class LightSensor:
 
     def __init__(self, pi, pin, callback):
         self.pi = pi
@@ -22,4 +22,3 @@ class LineDetector:
                 self.callback()
             
         cb = pi.callback(self.PIN, pigpio.RISING_EDGE, level_changed)
-
