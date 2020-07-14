@@ -1,21 +1,28 @@
 import pigpio
 import time
 
-# My light sensor IDUINO ST1140 returns HIGH (3,3 V) for black
-# and LOW (0 V) for white (contrary to data sheet).
-# Sensor may be too sensitive when crossing white/black boundary
-# (see below).
-#
-# This program is supposed to detect transitions from white to black.
-#
-# precondition: pigpiod demon must be running
-
 GPIO_LIGHT = 4 # Lightsensor GPI2 pin
 IGNORE_INTERVAL = 5000 # microseconds
 HIGH = 1
 
 tally = 0 # counter for callback function calls
 last_tick = 0 # time of last valid callback function call
+
+def initialize_pins(pi):
+    for i in [2, 3, 4]:
+        pi.set_mode(i, pigpio.OUTPUT)  
+
+def check_line():
+    if (pi.read(2)== HIGH or pi.read(3)== HIGH):
+        return True
+    else:
+        return False
+
+
+
+
+
+
 
 def level_changed(gpio_num, level, tick):
     global tally
