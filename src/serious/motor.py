@@ -1,7 +1,6 @@
 import sys
 import time
 import pigpio
-import asyncio
 
 class Motor:
     
@@ -16,15 +15,15 @@ class Motor:
         self.pi.set_mode(self.INPUT1_PIN, pigpio.OUTPUT)
         self.pi.set_mode(self.INPUT2_PIN, pigpio.OUTPUT)
 
-    async def forward(self, duration, power):
-        self.write(1,0)
-        await self.go(duration, power) 
+    def forward(self, power):
+        self._write(1,0)
+        self._go(power)
 
-    async def reverse(self, duration, power):
-        self.write(0,1)
-        await self.go(duration, power) 
+    def reverse(self, power):
+        self._write(0,1)
+        self._go(power)
 
-    async def go(self, duration, power):
+    def _go(self, power):
         try:
             duty = 10000 * power
             self.pi.hardware_PWM(self.PWM_PIN, self.PWM_FREQUENCY, duty)
@@ -34,12 +33,11 @@ class Motor:
             self.pi.stop()
             sys.exit(1)
 
-        await asyncio.sleep(duration)
+    def stop(self):
+        self._write(1,1)
+        self._write(0,0)
 
-        self.write(1,1)
-        self.write(0,0)
-
-    def write(self, pin1, pin2):
+    def _write(self, pin1, pin2):
         self.pi.write(self.INPUT1_PIN, pin1)
         self.pi.write(self.INPUT2_PIN, pin2)
 

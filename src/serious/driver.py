@@ -1,5 +1,6 @@
+import time
+
 import pigpio
-import asyncio
 
 class Driver():
     
@@ -8,14 +9,30 @@ class Driver():
         self.left = left_motor
         self.right = right_motor
 
-    async def forward(self, duration, power):
-        print('diving forward')
+    def forward(self, duration, power):
+        self.left.forward(power)
+        self.right.forward(power)
+        time.sleep(duration)
+        self.stop()
 
     def reverse(self, duration, power):
-        print('diving forward')
+        self.left.reverse(power)
+        self.right.reverse(power)
+        time.sleep(duration)
+        self.stop()
 
     def turn_left(self, duration, power):
-        print('turning left')
+        self.left.reverse(power)
+        self.right.forward(power)
+        time.sleep(duration)
+        self.stop()
 
     def turn_right(self, duration, power):
-        print('turning right')
+        self.left.forward(power)
+        self.right.reverse(power)
+        time.sleep(duration)
+        self.stop()
+
+    def stop(self):
+        self.left.stop()
+        self.right.stop()

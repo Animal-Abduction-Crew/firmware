@@ -2,7 +2,7 @@ import pigpio
 import time
 
 from line_detector import LineDetector
-from vehicle import Driver
+from driver import Driver
 from motor import Motor
 
 # Create gpio controller
@@ -29,18 +29,19 @@ right_motor = Motor(pi, [18,15,14])
 print('init driver')
 driver = Driver(pi, left_motor, right_motor)
 
-
-# tests
-# left_motor.forward(1,50)
-# right_motor.forward(1,50)
-
 while True:
     try:
+        driver.turn_left(1,30)
         time.sleep(1)
+        driver.turn_right(1,30)
+        time.sleep(1)
+
     except KeyboardInterrupt:
+        driver.stop()
         print('User interrupt')
         break
 
 # Free resources
 print('Shutting down')
+driver.stop()
 pi.stop()
