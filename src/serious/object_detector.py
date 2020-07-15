@@ -3,6 +3,8 @@ from gpiozero import CPUTemperature # for getting CPU temp
 import time # for timeouts
 import numpy as np
 import pigpio
+import queue
+import threading
 
 class ObjectDetector:
 
@@ -24,16 +26,23 @@ class ObjectDetector:
         self.MIN_CONFIDENCE = settings["min_confidence"]
         self.THRESHOLD = settings["threshold"]
 
+        self.buffer = queue.Queue()
+
         print('loading network')
         self.net = cv2.dnn.readNetFromDarknet(self.CONFIG_PATH, self.WEIGHTS_PATH)
         self.layer_names = self.net.getLayerNames()
         self.layer_names = [self.layer_names[i[0] - 1] for i in self.net.getUnconnectedOutLayers()]
 
         print('init video stream')
-        self.video_stream = cv2.VideoCapture(0) # cam id is 0
-        self.video_stream.set(cv2.CAP_PROP_BUFFERSIZE, 1)
-        self.video_stream.set(cv2.CAP_PROP_FRAME_WIDTH, self.NETWORK_WIDTH)
-        self.video_stream.set(cv2.CAP_PROP_FRAME_HEIGHT, self.NETWORK_HEIGHT)
+        self.stream = cv2.VideoCapture(0) # cam id is 0
+        self.stream.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+        self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, self.NETWORK_WIDTH)
+        self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, self.NETWORK_HEIGHT)
+
+        print('init frame graber')
+        frame_graber_thread = threading.Thread(target=self._frame_reader)
+        frame_graber_thread.daemon = True
+        frame_graber_thread.start()
 
         print('init cpu monitor')
         self.cpu = CPUTemperature()
@@ -43,6 +52,18 @@ class ObjectDetector:
             print(f"{cpu.temperature} is too hot! cooling down...")
             time.sleep(0.1)
 
+    def _frame_reader(self):
+        while True:
+            ret, frame = self.stream.read()
+            if not ret:
+                break
+            if not self.buffer.empty():
+                try:
+                    self.buffer.get_nowait()   # discard previous (unprocessed) frame
+                except queue.Empty:
+                    pass
+            self.buffer.put(frame)
+
     def detect(self):
         start = time.time()
 
@@ -50,12 +71,7 @@ class ObjectDetector:
         self._protect_cpu()
         
         # print('get a frame from the camera')
-        (grabbed, frame) = self.video_stream.read()
-        (grabbed, frame) = self.video_stream.read() # so that we have a recent picture
-
-        # end of the stream
-        if not grabbed:
-            print('stream endend')
+        frame = self.buffer.get()
 
         (W, H) = (None, None)
 
@@ -148,7 +164,3 @@ class ObjectDetector:
             return detections
 
         return None
-
-    def dispose(self):
-        print('disposing video stream')
-        self.video_stream.release()
