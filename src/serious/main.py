@@ -60,27 +60,39 @@ print('----------------------------------')
 print('startup successfull')
 print('----------------------------------')
 
+done = False
+drive_straight_correction = 0
 
-count = 0
-while True:
+def search():
+    global drive_straight_correction
+    if drive_straight_correction < 4:
+        driver.forward(0.75,50)
+        drive_straight_correction = drive_straight_correction + 1
+    else:
+        drive_straight_correction = 0
+        driver.turn_right(0.1, 10)
+
+while not done:
     try:
         detections = detector.detect()
         
         if detections is not None:
         
             for detection in detections:
-                if detection['name'] == 'star':
+                if detection['name'] == 'elephant':
                     if adv_driver.adjust_to_target(detection):
-                        driver.forward(0.5,20)
-                        driver.reverse(0.5,20)
+                        line_detected = False
+                        while not line_detected:
+                            driver.forward(1,90)
+                        driver.forward(0.4,90)
+                        driver.reverse(1.5,90)
+                        driver.stop()
+                        done = True
                     break
-
                 else:
-                    driver.forward(0.5,70)
+                    search()
         else:
-            if count < 6:
-                driver.forward(0.5,70)
-                count = count + 1
+            search()
 
     except KeyboardInterrupt:
         print('user interrupt')

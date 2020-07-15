@@ -19,6 +19,6 @@ class LightSensor:
             # Calls within IGNORE_INTERVAL are considered as single call.
             if ((self.pi.read(gpio_num) == self.HIGH) and (tick - self.LAST_TICK > self.IGNORE_INTERVAL)):
                 self.LAST_TICK
-                self.callback()
+                self.callback() # line detected
             
         cb = pi.callback(self.PIN, pigpio.RISING_EDGE, level_changed)
