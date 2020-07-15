@@ -6,7 +6,7 @@ class LightSensor:
         self.pi = pi
         self.callback = callback
         self.PIN = pin
-        self.IGNORE_INTERVAL = 50000000
+        self.IGNORE_INTERVAL = 5000000
         self.HIGH = 0
         self.TALLY = 0
         self.LAST_TICK = pi.get_current_tick()
