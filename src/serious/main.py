@@ -4,6 +4,7 @@ import time
 from light_sensor import LightSensor
 from driver import Driver
 from motor import Motor
+from object_detector import ObjectDetector
 
 # Create gpio controller
 print('init gpio controller')
@@ -37,16 +38,36 @@ right_motor = Motor(pi, [18,15,14])
 print('init driver')
 driver = Driver(pi, left_motor, right_motor)
 
+# init object detector
+
+detector_settings = {
+    "weights": "nets/256x192-yolo-tiny-3l_final.weights",
+    "cfg": "nets/256x192-yolo-tiny-3l.cfg",
+    "width": 256,
+    "height": 192,
+    "min_confidence": 0.5,
+    "threshold": 0.4
+}
+
+detector = ObjectDetector(detector_settings)
+
+print('----------------------------------')
+print('startup successfull')
+print('----------------------------------')
+
 while True:
     try:
-        pass
-
+        detector.detect()
     except KeyboardInterrupt:
-        driver.stop()
-        print('User interrupt')
+        print('user interrupt')
         break
 
 # Free resources
-print('Shutting down')
+print('shutting down')
+detector.dispose()
 driver.stop()
 pi.stop()
+
+print('----------------------------------')
+print('shutdown successfull')
+print('----------------------------------')
