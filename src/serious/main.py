@@ -69,7 +69,7 @@ while True:
         if detections is not None:
         
             for detection in detections:
-                if detection['name'] == 'tiger':
+                if detection['name'] == 'star':
                     if adv_driver.adjust_to_target(detection):
                         driver.forward(0.5,20)
                         driver.reverse(0.5,20)

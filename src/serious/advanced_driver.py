@@ -10,7 +10,7 @@ class AdvancedDriver:
 
     def adjust_to_target(self, detection):
 
-        x = detection['x']
+        x = detection['x'] + ( detection['width'] / 2)
         half = self.WIDTH / 2
 
         if x < half + self.TOLERANCE_PX and x > half - self.TOLERANCE_PX:
