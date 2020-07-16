@@ -84,7 +84,7 @@ def search():
             driver.turn_right(0.10, 10)
         
         drive_straight_correction = drive_straight_correction + 1
-        driver.forward(0.75,50)
+        driver.forward(0.75,100)
 
 def push_it_out():
     global line_detected
@@ -92,8 +92,8 @@ def push_it_out():
 
     line_detected = False
     while not line_detected:
-        driver.forward(0.5,90)
-    driver.forward(0.4,90)
+        driver.forward(0.1,100)
+    driver.forward(0.2,100)
     driver.reverse(1.5,90)
     driver.turn_right(2,80)
     driver.stop()
@@ -108,7 +108,7 @@ while not done:
         if detections is not None:
         
             for detection in detections:
-                if detection['name'] == 'frog' and detection['confidence'] > min_confidence:
+                if detection['name'] == 'star' and detection['confidence'] > min_confidence:
                     if adv_driver.adjust_to_target(detection):
                         push_it_out()
                 else:
