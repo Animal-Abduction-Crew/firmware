@@ -108,7 +108,7 @@ while not done:
         if detections is not None:
         
             for detection in detections:
-                if detection['name'] == 'elephant' and detection['confidence'] > min_confidence:
+                if detection['name'] == 'frog' and detection['confidence'] > min_confidence:
                     if adv_driver.adjust_to_target(detection):
                         push_it_out()
                 else:

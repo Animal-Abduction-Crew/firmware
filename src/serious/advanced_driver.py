@@ -27,4 +27,7 @@ class AdvancedDriver:
             print(f"adjusting to the right for {adjust_value}s")
             self.driver.turn_right(adjust_value, self.POWER)
 
+        if detection['width'] > 100:
+            return True
+
         return False
