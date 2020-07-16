@@ -75,14 +75,12 @@ def search():
         line_detected = False
     
     else:
-        if drive_straight_correction >= 4:
+        if drive_straight_correction >= 3:
             drive_straight_correction = 0
-            driver.turn_right(0.1, 15)
-            drive_straight_correction = drive_straight_correction + 1
-
+            driver.turn_right(0.10, 10)
+        
+        drive_straight_correction = drive_straight_correction + 1
         driver.forward(0.75,50)
-
-first_iteration = True
 
 while not done:
     try:
@@ -106,10 +104,6 @@ while not done:
                     search()
         else:
             search()
-
-        if first_iteration:
-            first_iteration = False
-            line_detected = False
 
     except KeyboardInterrupt:
         print('user interrupt')
