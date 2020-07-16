@@ -40,12 +40,16 @@ detector = ObjectDetector(detector_settings)
 line_detected = False
 def line_detected_cb():
     global line_detected
+    if not line_detected:
+        print('line detected!')
     line_detected = True
-    # print('line detected')
+
+last_time_something_infront = None
 
 def something_infront_cb():
-    pass
-    # print('something infront detected')
+    global last_time_something_infront
+    last_time_something_infront = time.time()
+    print('something infront detected')
 
 # init line detectors
 print('init left line sensor')
@@ -82,6 +86,21 @@ def search():
         drive_straight_correction = drive_straight_correction + 1
         driver.forward(0.75,50)
 
+def push_it_out():
+    global line_detected
+    global done
+
+    line_detected = False
+    while not line_detected:
+        driver.forward(0.5,90)
+    driver.forward(0.4,90)
+    driver.reverse(1.5,90)
+    driver.turn_right(2,80)
+    driver.stop()
+    done = True
+
+start = time.time()
+
 while not done:
     try:
         detections = detector.detect()
@@ -89,17 +108,9 @@ while not done:
         if detections is not None:
         
             for detection in detections:
-                if detection['name'] == 'frog' and detection['confidence'] > min_confidence:
+                if detection['name'] == 'elephant' and detection['confidence'] > min_confidence:
                     if adv_driver.adjust_to_target(detection):
-                        line_detected = False
-                        while not line_detected:
-                            driver.forward(1,90)
-                        driver.forward(0.4,90)
-                        driver.reverse(1.5,90)
-                        driver.turn_right(5,80)
-                        driver.stop()
-                        done = True
-                    break
+                        push_it_out()
                 else:
                     search()
         else:
@@ -108,6 +119,8 @@ while not done:
     except KeyboardInterrupt:
         print('user interrupt')
         break
+
+print(f"i ran for {time.time() - start}s")
 
 # Free resources
 print('shutting down')
