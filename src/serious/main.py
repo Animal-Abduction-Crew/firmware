@@ -95,7 +95,8 @@ def push_it_out():
         driver.forward(0.1,100)
     driver.forward(0.2,100)
     driver.reverse(1.5,90)
-    driver.turn_right(2,80)
+    driver.turn_right(1,80)
+    driver.turn_left(1,80)
     driver.stop()
     done = True
 
@@ -108,7 +109,7 @@ while not done:
         if detections is not None:
         
             for detection in detections:
-                if detection['name'] == 'tiger' and detection['confidence'] > min_confidence:
+                if detection['name'] == 'elephant' and detection['confidence'] > min_confidence:
                     if adv_driver.adjust_to_target(detection):
                         push_it_out()
                 else:

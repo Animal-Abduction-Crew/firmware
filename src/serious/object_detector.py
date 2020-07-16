@@ -133,7 +133,7 @@ class ObjectDetector:
         # bounding boxes
         idxs = cv2.dnn.NMSBoxes(boxes, confidences, self.MIN_CONFIDENCE, self.THRESHOLD)
 
-        print(f"took {time.time() - start} seconds")
+        # print(f"took {time.time() - start} seconds")
 
         # ensure at least one detection exists
         if len(idxs) > 0:
