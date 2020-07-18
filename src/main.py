@@ -1,133 +1,48 @@
-import pigpio
-import time
+from flask import Flask, render_template, jsonify
 
-from components.light_sensor import LightSensor
-from components.driver import Driver
-from components.motor import Motor
-from components.object_detector import ObjectDetector
-from components.advanced_driver import AdvancedDriver
+app = Flask(__name__)
 
-# init object detector
-detector_settings = {
-    "weights": "nets/256x192-yolo-tiny-3l_final.weights",
-    "cfg": "nets/256x192-yolo-tiny-3l.cfg",
-    "width": 256,
-    "height": 192,
-    "min_confidence": 0.5,
-    "threshold": 0.4
-}
+@app.route('/')
+def index():
+    return render_template('index.html')
 
-# Create gpio controller
-print('init gpio controller')
-pi = pigpio.pi()
+@app.route('/rescue/<animal>')
+def resuce(animal):
 
-# init motors
-print('init motors')
-left_motor = Motor(pi, [12,7,8])
-right_motor = Motor(pi, [18,15,14])
+    if animal=='cat':
+        print('Das ist eine Katze.')
 
-# init driver
-print('init driver')
-driver = Driver(pi, left_motor, right_motor)
+    if animal=='tiger':
+        print('Das ist eine Tiger.')
 
-# init advanced driver
-print('init advanced_driver')
-adv_driver = AdvancedDriver(driver, detector_settings['width'])
+    if animal=='star':
+        print('Das ist ein Stern.')
 
-detector = ObjectDetector(detector_settings)
+    if animal=='frog':
+        print('Das ist eine Frosch.')
 
-# Create line detector
-line_detected = False
-def line_detected_cb():
-    global line_detected
-    if not line_detected:
-        print('line detected!')
-    line_detected = True
+    if animal=='elephant':
+        print('Das ist ein Elefant.')
 
-last_time_something_infront = None
+    return render_template('index.html')
 
-def something_infront_cb():
-    global last_time_something_infront
-    last_time_something_infront = time.time()
-    print('something infront detected')
+@app.route('/control/<action>')
+def control(action):
 
-# init line detectors
-print('init left line sensor')
-left_line_detector = LightSensor(pi=pi, pin=2, callback=line_detected_cb)
-right_line_detector = LightSensor(pi=pi, pin=3, callback=line_detected_cb)
+    if action == 'forward':
+        print('remote control: go forward')
 
-# init front light sensor
-print('init front proximity sensor')
-front_proximity_sensor = LightSensor(pi=pi, pin=4, callback=something_infront_cb)
+    if action == 'reverse':
+        print('remote control: go reverse')
 
-min_confidence = 0.7
+    if action == 'left':
+        print('remote control: turn left')
 
-print('----------------------------------')
-print('startup successfull')
-print('----------------------------------')
+    if action == 'right':
+        print('remote control: turn right')
 
-done = False
-drive_straight_correction = 0
+    if action == 'stop':
+        print('remote control: stop')
 
-def search():
-    global drive_straight_correction
-    global line_detected
-
-    if line_detected:
-        driver.reverse(1,70)
-        driver.turn_left(.3, 70)
-        line_detected = False
-    
-    else:
-        if drive_straight_correction >= 3:
-            drive_straight_correction = 0
-            driver.turn_right(0.10, 10)
-        
-        drive_straight_correction = drive_straight_correction + 1
-        driver.forward(0.75,100)
-
-def push_it_out():
-    global line_detected
-    global done
-
-    line_detected = False
-    while not line_detected:
-        driver.forward(0.1,100)
-    driver.forward(0.2,100)
-    driver.reverse(1.5,90)
-    driver.turn_right(1,80)
-    driver.turn_left(1,80)
-    driver.stop()
-    done = True
-
-start = time.time()
-
-while not done:
-    try:
-        detections = detector.detect()
-        
-        if detections is not None:
-        
-            for detection in detections:
-                if detection['name'] == 'elephant' and detection['confidence'] > min_confidence:
-                    if adv_driver.adjust_to_target(detection):
-                        push_it_out()
-                else:
-                    search()
-        else:
-            search()
-
-    except KeyboardInterrupt:
-        print('user interrupt')
-        break
-
-print(f"i ran for {time.time() - start}s")
-
-# Free resources
-print('shutting down')
-driver.stop()
-pi.stop()
-
-print('----------------------------------')
-print('shutdown successfull')
-print('----------------------------------')
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0')
