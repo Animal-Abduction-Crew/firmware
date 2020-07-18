@@ -7,127 +7,85 @@ from components.motor import Motor
 from components.object_detector import ObjectDetector
 from components.advanced_driver import AdvancedDriver
 
-# init object detector
-detector_settings = {
-    "weights": "nets/256x192-yolo-tiny-3l_final.weights",
-    "cfg": "nets/256x192-yolo-tiny-3l.cfg",
-    "width": 256,
-    "height": 192,
-    "min_confidence": 0.5,
-    "threshold": 0.4
-}
-
-# Create gpio controller
-print('init gpio controller')
-pi = pigpio.pi()
-
-# init motors
-print('init motors')
-left_motor = Motor(pi, [12,7,8])
-right_motor = Motor(pi, [18,15,14])
-
-# init driver
-print('init driver')
-driver = Driver(pi, left_motor, right_motor)
-
-# init advanced driver
-print('init advanced_driver')
-adv_driver = AdvancedDriver(driver, detector_settings['width'])
-
-detector = ObjectDetector(detector_settings)
-
-# Create line detector
-line_detected = False
-def line_detected_cb():
-    global line_detected
-    if not line_detected:
-        print('line detected!')
-    line_detected = True
-
-last_time_something_infront = None
-
-def something_infront_cb():
-    global last_time_something_infront
-    last_time_something_infront = time.time()
-    print('something infront detected')
-
-# init line detectors
-print('init left line sensor')
-left_line_detector = LightSensor(pi=pi, pin=2, callback=line_detected_cb)
-right_line_detector = LightSensor(pi=pi, pin=3, callback=line_detected_cb)
-
-# init front light sensor
-print('init front proximity sensor')
-front_proximity_sensor = LightSensor(pi=pi, pin=4, callback=something_infront_cb)
-
-min_confidence = 0.7
-
-print('----------------------------------')
-print('startup successfull')
-print('----------------------------------')
-
-done = False
-drive_straight_correction = 0
-
-def search():
-    global drive_straight_correction
-    global line_detected
-
-    if line_detected:
-        driver.reverse(1,70)
-        driver.turn_left(.3, 70)
-        line_detected = False
-    
-    else:
-        if drive_straight_correction >= 3:
-            drive_straight_correction = 0
-            driver.turn_right(0.10, 10)
-        
-        drive_straight_correction = drive_straight_correction + 1
-        driver.forward(0.75,100)
-
-def push_it_out():
-    global line_detected
-    global done
+class AAR1:
 
     line_detected = False
-    while not line_detected:
-        driver.forward(0.1,100)
-    driver.forward(0.2,100)
-    driver.reverse(1.5,90)
-    driver.turn_right(1,80)
-    driver.turn_left(1,80)
-    driver.stop()
-    done = True
 
-start = time.time()
+    def __init__(self, pi, driver, adv_driver, detector):
+        self.pi = pi
+        self.driver = driver
+        self.adv_driver = adv_driver
+        self.detector = detector
 
-while not done:
-    try:
-        detections = detector.detect()
-        
-        if detections is not None:
-        
-            for detection in detections:
-                if detection['name'] == 'elephant' and detection['confidence'] > min_confidence:
-                    if adv_driver.adjust_to_target(detection):
-                        push_it_out()
+        # Create line detector callback
+        def line_detected_cb():
+            if not self.line_detected:
+                print('line detected!')
+            self.line_detected = True
+
+        self.left_line_detector = LightSensor(pi=pi, pin=2, callback=line_detected_cb)
+        self.right_line_detector = LightSensor(pi=pi, pin=3, callback=line_detected_cb)
+
+    def rescue(self, animal):
+
+        self.line_detected = False
+
+        done = False
+        min_confidence = 0.7
+        drive_straight_correction = 0
+
+        def search():
+
+            global drive_straight_correction
+
+            if self.line_detected:
+                self.driver.reverse(1,70)
+                self.driver.turn_left(.3, 70)
+                self.line_detected = False
+
+            else:
+                if drive_straight_correction >= 3:
+                    drive_straight_correction = 0
+                    self.driver.turn_right(0.10, 10)
+
+                drive_straight_correction = drive_straight_correction + 1
+                self.driver.forward(0.75,100)
+
+        def push_it_out():
+
+            global done
+
+            self.line_detected = False
+            while not self.line_detected:
+                self.driver.forward(0.1,100)
+            self.driver.forward(0.2,100)
+            self.driver.reverse(1.5,90)
+            self.driver.turn_right(1,80)
+            self.driver.turn_left(1,80)
+            self.driver.stop()
+            done = True
+
+        start = time.time()
+
+        while not done:
+            try:
+                detections = self.detector.detect()
+
+                if detections is not None:
+
+                    for detection in detections:
+                        if detection['name'] == animal and detection['confidence'] > min_confidence:
+                            if self.adv_driver.adjust_to_target(detection):
+                                push_it_out()
+                        else:
+                            search()
                 else:
                     search()
-        else:
-            search()
 
-    except KeyboardInterrupt:
-        print('user interrupt')
-        break
+            except:
+                done = True
+                print('THERE WAS AN ERROR DURING THE RESCUE MISSION')
+                self.driver.stop()
 
-print(f"i ran for {time.time() - start}s")
-
-# Free resources
-print('shutting down')
-driver.stop()
-pi.stop()
-
-print('----------------------------------')
-print('shutdown successfull')
-print('----------------------------------')
+        print(f"i ran for {time.time() - start}s")
+        self.driver.stop()
