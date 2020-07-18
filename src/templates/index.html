@@ -70,11 +70,11 @@
 
 <h1>AAR Steuerung</h1>
 <p>Welches Tier soll gesucht werden?</p>
-<button class="button" onclick="window.location.href='http://aar1.local:5000/rescue/tiger'" id='tiger'>Tiger</button>
-<button class="button" onclick="window.location.href='http://aar1.local:5000/rescue/cat'" id='cat'>Katze</button>
-<button class="button" onclick="window.location.href='http://aar1.local:5000/rescue/star'" id='star'>Stern</button>
-<button class="button" onclick="window.location.href='http://aar1.local:5000/rescue/frog'" id='frog'>Frosch</button>
-<button class="button" onclick="window.location.href='http://aar1.local:5000/rescue/elephant'" id='elephant'>Elefant</button>
+<button class="button" onclick="window.location.href='http://192.168.43.58:5000/rescue/tiger'" id='tiger'>Tiger</button>
+<button class="button" onclick="window.location.href='http://192.168.43.58:5000/rescue/cat'" id='cat'>Katze</button>
+<button class="button" onclick="window.location.href='http://192.168.43.58:5000/rescue/star'" id='star'>Stern</button>
+<button class="button" onclick="window.location.href='http://192.168.43.58:5000/rescue/frog'" id='frog'>Frosch</button>
+<button class="button" onclick="window.location.href='http://192.168.43.58:5000/rescue/elephant'" id='elephant'>Elefant</button>
 <div style="height: 100px;"></div>
 <div id="joystick" style="width:200px;height:200px;margin-bottom:20px;"></div>
 <script>
@@ -82,7 +82,7 @@
 
     const controlRequest = action => {
         const http = new XMLHttpRequest();
-        const base_url = 'http://aar1.local:5000/control/';
+        const base_url = 'http://192.168.43.58:5000/control/';
         http.open("GET", base_url + action);
         http.send()
     };
