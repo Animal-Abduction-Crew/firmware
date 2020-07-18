@@ -70,7 +70,7 @@ def resuce(animal):
 @app.route('/control/<action>')
 def control(action):
 
-    power = 80
+    power = 50
 
     if action == 'forward':
         print('remote control: go forward')
