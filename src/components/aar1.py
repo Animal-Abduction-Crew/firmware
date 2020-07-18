@@ -34,37 +34,6 @@ class AAR1:
         min_confidence = 0.7
         drive_straight_correction = 0
 
-        def search():
-
-            global drive_straight_correction
-
-            if self.line_detected:
-                self.driver.reverse(1,70)
-                self.driver.turn_left(.3, 70)
-                self.line_detected = False
-
-            else:
-                if drive_straight_correction >= 3:
-                    drive_straight_correction = 0
-                    self.driver.turn_right(0.10, 10)
-
-                drive_straight_correction = drive_straight_correction + 1
-                self.driver.forward(0.75,100)
-
-        def push_it_out():
-
-            global done
-
-            self.line_detected = False
-            while not self.line_detected:
-                self.driver.forward(0.1,100)
-            self.driver.forward(0.2,100)
-            self.driver.reverse(1.5,90)
-            self.driver.turn_right(1,80)
-            self.driver.turn_left(1,80)
-            self.driver.stop()
-            done = True
-
         start = time.time()
 
         while not done:
@@ -76,13 +45,47 @@ class AAR1:
                     for detection in detections:
                         if detection['name'] == animal and detection['confidence'] > min_confidence:
                             if self.adv_driver.adjust_to_target(detection):
-                                push_it_out()
+                                # push it out
+                                self.line_detected = False
+                                while not self.line_detected:
+                                    self.driver.forward(0.1,100)
+                                self.driver.forward(0.2,100)
+                                self.driver.reverse(1.5,90)
+                                self.driver.turn_right(1,80)
+                                self.driver.turn_left(1,80)
+                                self.driver.stop()
+                                done = True
                         else:
-                            search()
-                else:
-                    search()
+                            # search
+                            if self.line_detected:
+                                self.driver.reverse(1,70)
+                                self.driver.turn_left(.3, 70)
+                                self.line_detected = False
 
-            except:
+                            else:
+                                if drive_straight_correction >= 3:
+                                    drive_straight_correction = 0
+                                    self.driver.turn_right(0.10, 10)
+
+                                drive_straight_correction = drive_straight_correction + 1
+                                self.driver.forward(0.75,100)
+                else:
+                    # search
+                    if self.line_detected:
+                        self.driver.reverse(1,70)
+                        self.driver.turn_left(.3, 70)
+                        self.line_detected = False
+
+                    else:
+                        if drive_straight_correction >= 3:
+                            drive_straight_correction = 0
+                            self.driver.turn_right(0.10, 10)
+
+                        drive_straight_correction = drive_straight_correction + 1
+                        self.driver.forward(0.75,100)
+
+            except Exception as ex:
+                print(ex)
                 done = True
                 print('THERE WAS AN ERROR DURING THE RESCUE MISSION')
                 self.driver.stop()
