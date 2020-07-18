@@ -1,7 +1,7 @@
 import pigpio
 import time
-from driver import Driver
-from motor import Motor
+from components.driver import Driver
+from components.motor import Motor
 
 pi = pigpio.pi()
 left_motor = Motor(pi, [12,7,8])

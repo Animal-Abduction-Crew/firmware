@@ -1,4 +1,4 @@
-from object_detector import ObjectDetector
+from components.object_detector import ObjectDetector
 
 detector_settings = {
     "weights": "nets/256x192-yolo-tiny-3l_final.weights",

@@ -1,11 +1,11 @@
 import pigpio
 import time
 
-from light_sensor import LightSensor
-from driver import Driver
-from motor import Motor
-from object_detector import ObjectDetector
-from advanced_driver import AdvancedDriver
+from components.light_sensor import LightSensor
+from components.driver import Driver
+from components.motor import Motor
+from components.object_detector import ObjectDetector
+from components.advanced_driver import AdvancedDriver
 
 # init object detector
 detector_settings = {
