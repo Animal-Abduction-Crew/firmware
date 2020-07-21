@@ -9,16 +9,6 @@ from components.advanced_driver import AdvancedDriver
 from components.simple_driver import SimpleDriver
 from components.aar1 import AAR1
 
-# init object detector
-detector_settings = {
-    "weights": "src/nets/256x192-yolo-tiny-3l_final.weights",
-    "cfg": "src/nets/256x192-yolo-tiny-3l.cfg",
-    "width": 256,
-    "height": 192,
-    "min_confidence": 0.5,
-    "threshold": 0.4
-}
-
 # Create gpio controller
 print('init gpio controller')
 pi = pigpio.pi()
@@ -32,22 +22,6 @@ right_motor = Motor(pi, [18,15,14])
 print('init simple driver')
 simple_driver = SimpleDriver(pi, left_motor, right_motor)
 
-# init driver
-print('init driver')
-driver = Driver(pi, left_motor, right_motor)
-
-# init advanced driver
-print('init advanced_driver')
-adv_driver = AdvancedDriver(driver, detector_settings['width'])
-
-# init object detector
-print('init object detector')
-detector = ObjectDetector(detector_settings)
-
-# init AAR1
-print('init AAR1')
-aar1 = AAR1(pi=pi, driver=driver, adv_driver=adv_driver, detector=detector)
-
 app = Flask(__name__)
 
 @app.route('/')
@@ -56,6 +30,32 @@ def index():
 
 @app.route('/rescue/<animal>')
 def resuce(animal):
+
+    # init object detector
+    detector_settings = {
+        "weights": "src/nets/256x192-yolo-tiny-3l_final.weights",
+        "cfg": "src/nets/256x192-yolo-tiny-3l.cfg",
+        "width": 256,
+        "height": 192,
+        "min_confidence": 0.5,
+        "threshold": 0.4
+    }
+
+    # init driver
+    print('init driver')
+    driver = Driver(pi, left_motor, right_motor)
+
+    # init advanced driver
+    print('init advanced_driver')
+    adv_driver = AdvancedDriver(driver, detector_settings['width'])
+
+    # init object detector
+    print('init object detector')
+    detector = ObjectDetector(detector_settings)
+
+    # init AAR1
+    print('init AAR1')
+    aar1 = AAR1(pi=pi, driver=driver, adv_driver=adv_driver, detector=detector)
 
     if animal in ['elephant', 'tiger', 'star', 'cat', 'frog']:
 
