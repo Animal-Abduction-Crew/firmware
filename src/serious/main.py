@@ -38,11 +38,33 @@ detector = ObjectDetector(detector_settings)
 
 # Create line detector
 line_detected = False
-def line_detected_cb():
+line_detected_left = False
+def line_detected_left_cb():
     global line_detected
-    if not line_detected:
-        print('line detected!')
-    line_detected = True
+    global line_detected_left
+    global line_detected_right
+
+    if not line_detected_left:
+        print('line detected on the left!')
+
+    line_detected_left = True
+    
+    if line_detected_right and line_detected_left:
+        line_detected = True
+
+line_detected_right = True
+def line_detected_right_cb():
+    global line_detected
+    global line_detected_right
+    global line_detected_left
+
+    if not line_detected_right:
+        print('line detected on the right!')
+
+    line_detected_right = True
+
+    if line_detected_right and line_detected_left:
+        line_detected = True
 
 last_time_something_infront = None
 
@@ -53,8 +75,8 @@ def something_infront_cb():
 
 # init line detectors
 print('init left line sensor')
-left_line_detector = LightSensor(pi=pi, pin=2, callback=line_detected_cb)
-right_line_detector = LightSensor(pi=pi, pin=3, callback=line_detected_cb)
+left_line_detector = LightSensor(pi=pi, pin=2, callback=line_detected_left_cb)
+right_line_detector = LightSensor(pi=pi, pin=3, callback=line_detected_right_cb)
 
 # init front light sensor
 print('init front proximity sensor')
@@ -72,11 +94,15 @@ drive_straight_correction = 0
 def search():
     global drive_straight_correction
     global line_detected
+    global line_detected_left
+    global line_detected_right
 
     if line_detected:
         driver.reverse(1,70)
         driver.turn_left(.3, 70)
         line_detected = False
+        line_detected_left = False
+        line_detected_right = False
     
     else:
         if drive_straight_correction >= 3:
@@ -88,9 +114,13 @@ def search():
 
 def push_it_out():
     global line_detected
+    global line_detected_left
+    global line_detected_right
     global done
 
     line_detected = False
+    line_detected_left = False
+    line_detected_right = False
     while not line_detected:
         driver.forward(0.1,100)
     driver.forward(0.2,100)
@@ -109,7 +139,7 @@ while not done:
         if detections is not None:
         
             for detection in detections:
-                if detection['name'] == 'elephant' and detection['confidence'] > min_confidence:
+                if detection['name'] == 'tiger' and detection['confidence'] > min_confidence:
                     if adv_driver.adjust_to_target(detection):
                         push_it_out()
                 else:
