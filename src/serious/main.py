@@ -1,11 +1,17 @@
+#!/usr/bin/python3
+
 import pigpio
 import time
+import sys
 
 from light_sensor import LightSensor
 from driver import Driver
 from motor import Motor
 from object_detector import ObjectDetector
 from advanced_driver import AdvancedDriver
+
+animal = sys.argv[1]
+print(f"Seraching {sys.argv}")
 
 # init object detector
 detector_settings = {
@@ -82,7 +88,7 @@ right_line_detector = LightSensor(pi=pi, pin=3, callback=line_detected_right_cb)
 print('init front proximity sensor')
 front_proximity_sensor = LightSensor(pi=pi, pin=4, callback=something_infront_cb)
 
-min_confidence = 0.7
+min_confidence = 0.6
 
 print('----------------------------------')
 print('startup successfull')
@@ -139,7 +145,13 @@ while not done:
         if detections is not None:
         
             for detection in detections:
-                if detection['name'] == 'tiger' and detection['confidence'] > min_confidence:
+                if detection['name'] == 'tiger' and animal == 'cat':
+                    min_confidence = 0.7
+
+                if detection['name'] == 'cat' and animal == 'tiger':
+                    min_confidence = 0.7
+
+                if detection['name'] == animal and detection['confidence'] > min_confidence:
                     if adv_driver.adjust_to_target(detection):
                         push_it_out()
                 else:
