@@ -1,4 +1,7 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template
+import subprocess
+
+locked = False
 
 app = Flask(__name__)
 
@@ -6,25 +9,25 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
-@app.route('/<animal>')
-def action(animal):
-    if animal=='cat':
-        print('Das ist eine Katze.')
-        
+@app.route('/rescue/<animal>')
+def resuce(animal):
 
-    if animal=='tiger':
-        print('Das ist eine Tiger.')
+    global locked
 
-    if animal=='star':
-        print('Das ist ein Stern.')
+    if not locked:
+        locked = True
+        if animal in ['elephant', 'tiger', 'star', 'cat', 'frog']:
 
-    if animal=='frog':
-        print('Das ist eine Frosch.')
+            print(f"Ok, i'm going to resuce a(n) {animal}")
 
-    if animal=='elephant':
-        print('Das ist ein Elefant.')
+            subprocess.call(["/home/pi/repos/firmware/src/serious/main.py", animal])
 
-    return render_template('index.html')
+            return 'OK'
+        else:
+            return f"WTF is a {animal}? I'm not going to do anything!"
+    else:
+        return "I'm already searching for a stupid animal!"
+
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0', use_reloader=False)

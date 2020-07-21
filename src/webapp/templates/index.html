@@ -3,48 +3,25 @@
 <head>
 <title>AAR Steuerung</title>
     <style>
-            .button{
-                background-color: #4CAF50; /* Green */
-                border: none;
-                color: white;
-                padding: 15px 32px;
-                text-align: center;
-                text-decoration: none;
-                display: inline-block;
-                font-size: 16px;
-            }
-            .buttonstop{
-                background-color: red; /* Green */
-                border: none;
-                color: white;
-                padding: 15px 32px;
-                text-align: center;
-                text-decoration: none;
-                display: inline-block;
-                font-size: 16px;
-            }
+        .button{
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
-    <script>
-        function start(animal) {
-            alert(animal);
-        }
-
-        function stop() {
-            alert('Stop');
-        }
-        </script>
-
 <h1>AAR Steuerung</h1>
 <p>Welches Tier soll gesucht werden?</p>
-<button class="button" onclick="window.location.href='http://127.0.0.1:5000/tiger'" id='tiger'>Tiger</button>
-<button class="button" onclick="window.location.href='http://127.0.0.1:5000/cat'" id='cat'>Katze</button>
-<button class="button" onclick="window.location.href='http://127.0.0.1:5000/star'" id='star'>Stern</button>
-<button class="button" onclick="window.location.href='http://127.0.0.1:5000/frog'" id='frog'>Frosch</button>
-<button class="button" onclick="window.location.href='http://127.0.0.1:5000/elephant'" id='elephant'>Elefant</button>
-<p></p>
-<button class="buttonstop" onclick="stop()" id='stop'>Stop</button>
-
+<button class="button" onclick="window.location.href='http://192.168.43.58:5000/rescue/tiger'" id='tiger'>Tiger</button>
+<button class="button" onclick="window.location.href='http://192.168.43.58:5000/rescue/cat'" id='cat'>Katze</button>
+<button class="button" onclick="window.location.href='http://192.168.43.58:5000/rescue/star'" id='star'>Stern</button>
+<button class="button" onclick="window.location.href='http://192.168.43.58:5000/rescue/frog'" id='frog'>Frosch</button>
+<button class="button" onclick="window.location.href='http://192.168.43.58:5000/rescue/elephant'" id='elephant'>Elefant</button>
 </body>
 </html>
