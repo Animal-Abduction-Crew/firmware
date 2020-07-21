@@ -153,9 +153,8 @@ while not done:
 
                 if detection['name'] == animal and detection['confidence'] > min_confidence:
                     if adv_driver.adjust_to_target(detection):
-
                         # should be at least 1m infront
-                        if detection['width'] >= 40:
+                        if detection['width'] < 40:
                             search()
                         else:
                             push_it_out()
