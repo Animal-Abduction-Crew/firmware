@@ -31,7 +31,7 @@ class AAR1:
         self.line_detected = False
 
         done = False
-        min_confidence = 0.7
+        min_confidence = 0.6
         drive_straight_correction = 0
 
         start = time.time()
@@ -43,6 +43,13 @@ class AAR1:
                 if detections is not None:
 
                     for detection in detections:
+
+                        # adjust confidence based on animals in the field
+                        if detection['name'] == 'tiger' and animal == 'cat':
+                            min_confidence = 0.7
+                        if detection['name'] == 'cat' and animal == 'tiger':
+                            min_confidence = 0.7
+
                         if detection['name'] == animal and detection['confidence'] > min_confidence:
                             if self.adv_driver.adjust_to_target(detection):
                                 # push it out
@@ -55,6 +62,8 @@ class AAR1:
                                 self.driver.turn_left(1,80)
                                 self.driver.stop()
                                 done = True
+                                # reset confidence
+                                min_confidence = 0.6
                         else:
                             # search
                             if self.line_detected:
