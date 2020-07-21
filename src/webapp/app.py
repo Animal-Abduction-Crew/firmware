@@ -15,13 +15,12 @@ def resuce(animal):
     global locked
 
     if not locked:
-        locked = True
         if animal in ['elephant', 'tiger', 'star', 'cat', 'frog']:
-
+            locked = True
             print(f"Ok, i'm going to resuce a(n) {animal}")
 
             subprocess.call(["/home/pi/repos/firmware/src/serious/main.py", animal])
-
+            locked = False
             return 'OK'
         else:
             return f"WTF is a {animal}? I'm not going to do anything!"
