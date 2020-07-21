@@ -88,7 +88,7 @@ right_line_detector = LightSensor(pi=pi, pin=3, callback=line_detected_right_cb)
 print('init front proximity sensor')
 front_proximity_sensor = LightSensor(pi=pi, pin=4, callback=something_infront_cb)
 
-min_confidence = 0.6
+min_confidence = 0.55
 
 print('----------------------------------')
 print('startup successfull')
