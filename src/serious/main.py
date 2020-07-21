@@ -139,6 +139,10 @@ def push_it_out():
 start = time.time()
 
 while not done:
+    if time.time() - start > 300:
+        print("I ran for 5 minutes. I'll stop now")
+        break
+
     try:
         detections = detector.detect()
         
