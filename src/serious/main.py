@@ -15,8 +15,8 @@ print(f"Seraching {sys.argv}")
 
 # init object detector
 detector_settings = {
-    "weights": "nets/256x192-yolo-tiny-3l_final.weights",
-    "cfg": "nets/256x192-yolo-tiny-3l.cfg",
+    "weights": "/home/pi/repos/firmware/src/serious/nets/256x192-yolo-tiny-3l_final.weights",
+    "cfg": "/home/pi/repos/firmware/src/serious/nets/256x192-yolo-tiny-3l.cfg",
     "width": 256,
     "height": 192,
     "min_confidence": 0.5,
