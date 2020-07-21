@@ -77,7 +77,7 @@ last_time_something_infront = None
 def something_infront_cb():
     global last_time_something_infront
     last_time_something_infront = time.time()
-    print('something infront detected')
+    #print('something infront detected')
 
 # init line detectors
 print('init left line sensor')
