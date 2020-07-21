@@ -2,7 +2,7 @@ class AdvancedDriver:
 
     POWER = 30
     MAGIC = 5
-    MIN_ADJUST = 0.02
+    MIN_ADJUST = 0.01
     TOLERANCE_PX = 4
 
     def __init__(self, driver, width):
