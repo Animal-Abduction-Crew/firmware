@@ -14,15 +14,3 @@ FROM mcr.microsoft.com/vscode/devcontainers/python:0-${VARIANT}
 # COPY requirements.txt /tmp/pip-tmp/
 # RUN pip3 --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/requirements.txt \
 #    && rm -rf /tmp/pip-tmp
-
-ARG ANSIBLE_KEY="93C4A3FD7BB9C367"
-ENV DEBIAN_FRONTEND=noninteractive
-RUN echo "deb http://ppa.launchpad.net/ansible/ansible/ubuntu trusty main" >> /etc/apt/sources.list \
-   && sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys "$ANSIBLE_KEY" \
-   && apt-get update \
-   && apt-get -y install --no-install-recommends ansible \
-   # Clean up
-   && apt-get autoremove -y \
-   && apt-get clean -y \
-   && rm -rf /var/lib/apt/lists/*
-ENV DEBIAN_FRONTEND=dialog

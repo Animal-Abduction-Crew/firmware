@@ -1,5 +1,0 @@
----
-- hosts: aar1
-  remote_user: pi
-  roles:
-    - shell
