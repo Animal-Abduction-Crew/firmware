@@ -19,7 +19,7 @@ def resuce(animal):
             locked = True
             print(f"Ok, i'm going to resuce a(n) {animal}")
 
-            subprocess.call(["/home/pi/repos/firmware/src/serious/main.py", animal])
+            subprocess.call(["../core/main.py", animal])
             locked = False
             return 'OK'
         else:
